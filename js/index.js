@@ -1,6 +1,20 @@
+
 const movieSearchBox = document.getElementById('movie-search-box');
 const searchList = document.getElementById('search-list');
-const resultGrid = document.getElementById('result-grid');
+const resultGrid = document.getElementById('search-result');
+
+var debouncedGetInfo = debounce(findMovies);
+
+function debounce(callback) {
+    var timeout;
+
+    return function() {
+      clearTimeout(timeout);
+      timeout = setTimeout(callback, 800);
+    };
+}
+
+movieSearchBox.addEventListener('input', debouncedGetInfo);
 
 async function loadMovies(searchTerm) {
     const URL = `https://www.omdbapi.com/?s=${searchTerm}&page-1&apikey=6046ceb`;
@@ -15,10 +29,10 @@ async function loadMovies(searchTerm) {
 function findMovies() {
     let searchTerm = (movieSearchBox.value).trim();
     if(searchTerm.length > 0) {
-        searchList.classList.remove('hide-search-list');
+        searchList.classList.remove('search-list_hide');
         loadMovies(searchTerm);
     } else {
-        searchList.classList.add('hide-search-list');
+        searchList.classList.add('search-list_hide');
     }
 }
 
@@ -27,7 +41,7 @@ function displayMovieList(movies) {
     for(let idx = 0; idx < movies.length; idx++) {
         let movieListItem = document.createElement('div');
         movieListItem.dataset.id = movies[idx].imdbID;
-        movieListItem.classList.add('search-list-item');
+        movieListItem.classList.add('search-list__item');
         if(movies[idx].Poster != "N/A") {
             moviePoster = movies[idx].Poster;
         } else {
@@ -35,14 +49,12 @@ function displayMovieList(movies) {
         }
 
         movieListItem.innerHTML = `
-            <div class="search-list-item">
-                <div class="search-item-thumbnail">
-                    <img src="${moviePoster}" alt="">
-                </div>
-                <div class="search-item-info">
-                    <h3>${movies[idx].Title}</h3>
-                    <p>${movies[idx].Year}</p>
-                </div>
+            <div class="search-list__thumbnail">
+                <img src="${moviePoster}" alt="movie poster">
+            </div>
+            <div class="search-list__info">
+                <h3>${movies[idx].Title}</h3>
+                <p>${movies[idx].Year}</p>
             </div>
         `;
 
@@ -53,7 +65,7 @@ function displayMovieList(movies) {
 }
 
 function loadMoviesDetails() {
-    const searchListMovies = searchList.querySelectorAll('.search-list-item');
+    const searchListMovies = searchList.querySelectorAll('.search-list__item');
     searchListMovies.forEach(movie => {
         movie.addEventListener('click', async () => {
             searchList.classList.add('hide-search-lsit');
@@ -68,16 +80,19 @@ function loadMoviesDetails() {
 
 function displayMovieDetails(details) {
     resultGrid.innerHTML = `
-        <div class="movie-poster">
+        <div class="search-result__poster">
             <img src="${(details.Poster != 'N/A') ? details.Poster : 'image_not_found.png'}" alt="movie poster">
         </div>
-        <div class="movie-info">
-            <h3 class="movie-title">${details.Title}</h3>
-            <ul class="movie-misc-info">
+
+        <div class="search-result__info">
+            <h3 class="search-result__title">${details.Title}</h3>
+
+            <ul class="search-result__misc">
                 <li class="year">Year: ${details.Year}</li>
                 <li class="rated">Ratings: ${details.Rated}</li>
                 <li class="released">Released: ${details.Released}</li>
             </ul>
+
             <p class="genre"><b>Genre:</b> ${details.Genre}</p>
             <p class="writer"><b>Writer:</b> ${details.Writer}</p>
             <p class="actors"><b>Actors:</b> ${details.Actors}</p>
@@ -90,6 +105,6 @@ function displayMovieDetails(details) {
 
 window.addEventListener('click', (event) => {
     if(event.target.className != 'form-control') {
-        searchList.classList.add('hide-search-list')
+        searchList.classList.add('search-list_hide')
     }
 });
