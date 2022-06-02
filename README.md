@@ -9,7 +9,7 @@
 
 
 
-![img app](https://ll-testing.ru/img-prodject/search-movies.png)
+![img app](http://test-developer.ru/preview/search-movies.png)
 
 ## Usage <a name = "usage"></a>
 
