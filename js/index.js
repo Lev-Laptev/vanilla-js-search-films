@@ -70,7 +70,7 @@ function loadMoviesDetails() {
         movie.addEventListener('click', async () => {
             searchList.classList.add('hide-search-lsit');
             movieSearchBox.value = "";
-            const result = await fetch(`http://www.omdbapi.com/?i=${movie.dataset.id}&apikey=6046ceb `);
+            const result = await fetch(`https://www.omdbapi.com/?i=${movie.dataset.id}&apikey=6046ceb `);
             const movieDetails = await result.json();
 
             displayMovieDetails(movieDetails);
